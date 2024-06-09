@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://127.0.0.1/K5_Nodemy");
+mongoose
+  .connect(
+    "mongodb+srv://ThuNganPham:Vyfjgfx8suMPCmzP@cluster0.tjb2qrj.mongodb.net/ThuNganPham?retryWrites=true&w=majority&appName=Cluster0"
+  )
+  .then(() => console.log("Connected!"));
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 

@@ -11,7 +11,10 @@ app.post("/register", (req, res, next) => {
   var username = req.body.username;
   var password = req.body.password;
 
-  AccountModel.findOne({ username: username })
+  // console.log(username, password);
+  AccountModel.findOne({
+    username: username,
+  })
     .then((data) => {
       if (data) {
         res.json("Tài khoản này đã tồn tại");
@@ -32,8 +35,41 @@ app.post("/register", (req, res, next) => {
     });
 });
 
-app.use("/api1/", router1);
+app.post("/login", (req, res, next) => {
+  var username = req.body.username;
+  var password = req.body.password;
 
-app.listen(3001, () => {
+  // console.log(username, password);
+  AccountModel.findOne({
+    username: username,
+    password: password,
+  })
+    .then((data) => {
+      if (data) {
+        res.json("Tài khoản này đã tồn tại");
+      } else {
+        return AccountModel.create({
+          username: username,
+          password: password,
+        });
+      }
+    })
+    .then((data) => {
+      if (data) {
+        res.json("Đăng nhập thành công");
+      } else {
+        res.status(300).json("tai khoan khong đúng");
+      }
+    })
+    .catch((err) => {
+      res.status(500).json("Có lỗi bên server");
+    });
+});
+
+var routerAccount = require("./routers/account.js");
+
+app.use("/api/account/", routerAccount);
+
+app.listen(3000, () => {
   console.log("Server started on port 3001");
 });

@@ -3,9 +3,16 @@ var app = express();
 var router1 = require("./apiRouter.js");
 var bodyParser = require("body-parser"); // muốn đọc được data thì phải cài body-parser
 const AccountModel = require("./models/account.js");
+const path = require("path"); // path này chuyên nối các đường dẫn lại với nhau
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use("/congkhai", express.static(path.join(__dirname, "/public"))); // chỉ có folder nào được static thì folder đó mới được công khai
+
+app.get("/", (req, res, next) => {
+  var LinkFile = path.join(__dirname, "./index.html");
+  res.sendFile(LinkFile);
+});
 
 app.post("/register", (req, res, next) => {
   var username = req.body.username;

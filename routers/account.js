@@ -2,7 +2,7 @@ const express = require("express");
 var router = express.Router();
 const AccountModel = require("../models/account");
 
-router.get("/", (req, res, next) => {
+router.get("/user", (req, res, next) => {
   AccountModel.find({})
     .then((data) => {
       res.json(data);

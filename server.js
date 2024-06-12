@@ -76,6 +76,32 @@ app.post("/login", (req, res, next) => {
 var routerAccount = require("./routers/account.js");
 
 app.use("/api/account/", routerAccount);
+var PAGE_SIZE = 2;
+
+app.get("/user", (req, res, next) => {
+  var page = req.query.page;
+  if (page) {
+    page = parseInt(page);
+    var Boqua = (page - 1) * PAGE_SIZE;
+    AccountModel.find({})
+      .skip(Boqua)
+      .limit(PAGE_SIZE)
+      .then((data) => {
+        res.json(data);
+      })
+      .catch((error) => {
+        res.status(500).json("Loi server");
+      });
+  } else {
+    AccountModel.find({})
+      .then((data) => {
+        res.json(data);
+      })
+      .catch((error) => {
+        res.status(500).json("Loi server");
+      });
+  }
+});
 
 app.listen(3000, () => {
   console.log("Server started on port 3001");

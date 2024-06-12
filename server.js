@@ -82,6 +82,9 @@ app.get("/user", (req, res, next) => {
   var page = req.query.page;
   if (page) {
     page = parseInt(page);
+    if (page < 1) {
+      page = 1;
+    }
     var Boqua = (page - 1) * PAGE_SIZE;
     AccountModel.find({})
       .skip(Boqua)

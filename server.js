@@ -7,10 +7,10 @@ const path = require("path"); // path này chuyên nối các đường dẫn l�
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use("/congkhai", express.static(path.join(__dirname, "/public"))); // chỉ có folder nào được static thì folder đó mới được công khai
+app.use("/congkhai", express.static(path.join(__dirname, "public"))); // chỉ có folder nào được static thì folder đó mới được công khai
 
 app.get("/", (req, res, next) => {
-  var LinkFile = path.join(__dirname, "./index.html");
+  var LinkFile = path.join(__dirname, "public/index.html");
   res.sendFile(LinkFile);
 });
 

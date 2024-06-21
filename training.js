@@ -15,6 +15,8 @@ jwt.verify(
   "password1234"
 );
 
+//token = header.payload.signature (tức là cái secret)
 // có callback là bđb
 // mỗi token có thể set expiresIn
 //khi tạo ra token thì ko thể hủy được
+// => cách thức jwt tạo ra và hoạt động ntn

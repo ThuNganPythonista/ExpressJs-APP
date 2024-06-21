@@ -1,4 +1,6 @@
 const express = require("express");
+var jwt = require("jsonwebtoken");
+
 var app = express();
 var router1 = require("./apiRouter.js");
 var bodyParser = require("body-parser"); // muốn đọc được data thì phải cài body-parser
@@ -12,6 +14,11 @@ app.use(express.static("public"));
 
 app.get("/", (req, res, next) => {
   var LinkFile = path.join(__dirname, "public/index.html");
+  res.sendFile(LinkFile);
+});
+
+app.get("/login", (req, res, next) => {
+  var LinkFile = path.join(__dirname, "login.html");
   res.sendFile(LinkFile);
 });
 
@@ -52,19 +59,24 @@ app.post("/login", (req, res, next) => {
     username: username,
     password: password,
   })
+    // .then((data) => {
+    //   if (data) {
+    //     res.json("Tài khoản này đã tồn tại");
+    //   } else {
+    //     return AccountModel.create({
+    //       username: username,
+    //       password: password,
+    //     });
+    //   }
+    // })
     .then((data) => {
       if (data) {
-        res.json("Tài khoản này đã tồn tại");
-      } else {
-        return AccountModel.create({
-          username: username,
-          password: password,
+        var token = jwt.sign({ _id: data._id }, "mk");
+
+        res.json({
+          message: "dang nhap thanh cong ",
+          token: token,
         });
-      }
-    })
-    .then((data) => {
-      if (data) {
-        res.json("Đăng nhập thành công");
       } else {
         res.status(300).json("tai khoan khong đúng");
       }

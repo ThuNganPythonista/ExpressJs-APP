@@ -4,15 +4,41 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- <script src="./public/jquery.js"></script> -->
   </head>
-  <script src="public/jquery.js"></script>
   <body>
     Username : <input type="text" id="username" /> Password :
     <input type="text" id="password" />
     <button onclick="login()">Log in</button>
   </body>
   <script>
+    function setCookie(cname, cvalue, exdays) {
+      const d = new Date();
+      d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+      let expires = "expires=" + d.toUTCString();
+      document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+    function getCookie(cname) {
+      let name = cname + "=";
+      let decodedCookie = decodeURIComponent(document.cookie);
+      let ca = decodedCookie.split(";");
+      for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == " ") {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
     function login() {
+      const username = $("#username").val();
+      const password = $("#password").val();
+      console.log(username, password);
+
       $.ajax({
         url: "/login",
         type: "POST",
@@ -22,9 +48,7 @@
         },
       })
         .then((data) => {
-          return res.json({
-            token: token,
-          });
+          setCookies("token", data.token);
         })
         .catch((err) => {
           res.status(500).json("Có lỗi bên server");

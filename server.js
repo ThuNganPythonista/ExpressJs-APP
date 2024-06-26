@@ -54,21 +54,10 @@ app.post("/login", (req, res, next) => {
   var username = req.body.username;
   var password = req.body.password;
 
-  // console.log(username, password);
   AccountModel.findOne({
     username: username,
     password: password,
   })
-    // .then((data) => {
-    //   if (data) {
-    //     res.json("Tài khoản này đã tồn tại");
-    //   } else {
-    //     return AccountModel.create({
-    //       username: username,
-    //       password: password,
-    //     });
-    //   }
-    // })
     .then((data) => {
       if (data) {
         var token = jwt.sign({ _id: data._id }, "mk");
@@ -125,6 +114,24 @@ app.get("/user", (req, res, next) => {
       });
   }
 });
+
+app.get(
+  "/private/:token",
+  (req, res, next) => {
+    try {
+      var token = req.params.token;
+      var result = jwt.verify(token, "mk");
+      if (result) {
+        next();
+      }
+    } catch (error) {
+      return res.json("ban can phai login");
+    }
+  },
+  (req, res, next) => {
+    res.json("welcome");
+  }
+);
 
 app.listen(3000, () => {
   console.log("Server started on port 3001");

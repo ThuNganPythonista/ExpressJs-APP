@@ -48,7 +48,9 @@
         },
       })
         .then((data) => {
-          setCookies("token", data.token);
+          // setCookies("token", data.token);
+          console.log(data);
+          setCookie("token", data.token, 1);
         })
         .catch((err) => {
           res.status(500).json("Có lỗi bên server");

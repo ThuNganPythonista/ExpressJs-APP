@@ -6,7 +6,9 @@ var router1 = require("./apiRouter.js");
 var bodyParser = require("body-parser"); // muốn đọc được data thì phải cài body-parser
 const AccountModel = require("./models/account.js");
 const path = require("path"); // path này chuyên nối các đường dẫn lại với nhau
+var cookieParser = require("cookie-parser");
 
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use("/congkhai", express.static(path.join(__dirname, "public"))); // chỉ có folder nào được static thì folder đó mới được công khai
@@ -62,7 +64,7 @@ app.post("/login", (req, res, next) => {
       if (data) {
         var token = jwt.sign({ _id: data._id }, "mk");
 
-        res.json({
+        return res.json({
           message: "dang nhap thanh cong ",
           token: token,
         });
@@ -116,22 +118,64 @@ app.get("/user", (req, res, next) => {
 });
 
 app.get(
-  "/private/:token",
+  "/private",
   (req, res, next) => {
     try {
-      var token = req.params.token;
+      var token = req.cookies.token;
       var result = jwt.verify(token, "mk");
       if (result) {
         next();
       }
     } catch (error) {
-      return res.json("ban can phai login");
+      return res.status(401).json(error);
     }
   },
   (req, res, next) => {
     res.json("welcome");
   }
 );
+
+var checkLogin = (req, res, next) => {
+  try {
+    var token = req.cookies.token;
+    var idUser = jwt.verify(token, "mk");
+    AccountModel.findOne({
+      _id: idUser,
+    })
+      .then((data) => {
+        if (data) {
+          req.data = data;
+          next();
+        } else {
+          res.json("not permission");
+        }
+      })
+      .catch((err) => {});
+  } catch (err) {
+    res.json("loi token");
+  }
+};
+
+app.get("/task", checkLogin, (req, res, next) => {
+  console.log(req.data);
+  res.json("ALL TASKS");
+});
+
+var checkStudent = (req, res, next) => {
+  if (req.data.role === "teacher" || req.data.role === "manager") {
+    next();
+  } else {
+    res.json("not permission");
+  }
+};
+
+app.get("/student", checkLogin, (req, res, next) => {
+  res.json("ALL STUDENTS");
+});
+
+app.get("/teacher", checkLogin, checkStudent, (req, res, next) => {
+  res.json("ALL TEACHERS");
+});
 
 app.listen(3000, () => {
   console.log("Server started on port 3001");

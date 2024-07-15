@@ -14,6 +14,11 @@ app.use(bodyParser.json());
 app.use("/congkhai", express.static(path.join(__dirname, "public"))); // chỉ có folder nào được static thì folder đó mới được công khai
 app.use(express.static("public"));
 
+app.get("/demo-cookie", (req, res, next) => {
+  var LinkFile = path.join(__dirname, "demo-cookie.html");
+  res.sendFile(LinkFile);
+});
+
 app.get("/", (req, res, next) => {
   var LinkFile = path.join(__dirname, "public/index.html");
   res.sendFile(LinkFile);

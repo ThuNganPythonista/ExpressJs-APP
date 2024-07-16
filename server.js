@@ -13,6 +13,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use("/congkhai", express.static(path.join(__dirname, "public"))); // chỉ có folder nào được static thì folder đó mới được công khai
 app.use(express.static("public"));
+var session = require("express-session");
 
 app.get("/demo-cookie", (req, res, next) => {
   var LinkFile = path.join(__dirname, "demo-cookie.html");
@@ -83,6 +84,30 @@ app.post("/login", (req, res, next) => {
 });
 
 var routerAccount = require("./routers/account.js");
+
+var app = express();
+app.set("trust proxy", 1); // trust first proxy
+app.use(
+  session({
+    secret: "keyboard cat", //sessionID gửi về client là 1 token nên cần có secret key để mã hóa bảo mật
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }, // đường truyền phải là https lên server thì mới để true
+  })
+);
+
+app.get("/demo", function (req, res, next) {
+  if (req.session.views) {
+    req.session.views++;
+    res.setHeader("Content-Type", "text/html");
+    res.write("<p>views: " + req.session.views + "</p>");
+    res.write("<p>expires in: " + req.session.cookie.maxAge / 1000 + "s</p>");
+    res.end();
+  } else {
+    req.session.views = 1;
+    res.end("welcome to the session demo. refresh!");
+  }
+});
 
 app.use("/api/account/", routerAccount);
 var PAGE_SIZE = 2;
@@ -180,6 +205,12 @@ app.get("/student", checkLogin, (req, res, next) => {
 
 app.get("/teacher", checkLogin, checkStudent, (req, res, next) => {
   res.json("ALL TEACHERS");
+});
+
+app.get("/logout", (res, req, next) => {
+  req.session.destroy((req, res, next) => {
+    res.json("ss end");
+  });
 });
 
 app.listen(3000, () => {
